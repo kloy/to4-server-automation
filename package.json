@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@vultr/vultr-node": "^1.0.3",
+    "commander": "^6.2.1",
     "execa": "^5.0.0",
     "node-fetch": "^2.6.1"
   },

@@ -2,14 +2,6 @@ const fetch = require('node-fetch');
 
 const apiKey = process.env.VULTR_API_KEY;
 const baseUrl = 'https://api.vultr.com/v2';
-// TODO ssh key should be in env
-const sshKeyId = 'cc87f5c3-9b0c-4924-bebf-ed8ea42e579e';
-// High compute VM at $6 per month
-const planKey = 'vc2-1c-1gb';
-// TODO region should come from config
-const regionKey = 'dfw';
-// Ubuntu 18.04 x64
-const osId = 270;
 
 const getInstances = async () => {
     const response = await fetch(`${baseUrl}/instances`, {
@@ -32,29 +24,32 @@ const getInstance = async (instanceId) => {
 };
 
 const deleteInstance = async (instanceId) => {
-    const response = await fetch(`${baseUrl}/instances/${instanceId}`, {
+    await fetch(`${baseUrl}/instances/${instanceId}`, {
         method: 'DELETE',
         headers: {
             Authorization: `Bearer ${apiKey}`
         }
     });
-    await response.json();
 };
 
-const createInstance = async () => {
+const createInstance = async ({
+    osId = 0,
+    plan = "",
+    region = "",
+    sshKeyId = "",
+}) => {
     const response = await fetch(`${baseUrl}/instances`, {
         method: 'POST',
         headers: {
             Authorization: `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-            region: regionKey,
-            plan: planKey,
+            region,
+            plan,
             os_id: osId,
             sshkey_id: [sshKeyId],
             activation_email: true,
-            // hostname: '',
-            label: `to4-server ${Date.now()}`,
+            label: `[${region}] to4-server ${Date.now()}`,
             tag: 'to4'
         })
     });

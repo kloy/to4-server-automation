@@ -1,9 +1,8 @@
-// Start the server:
-// /home/to4adm/TO4Server/TOServer.sh start
 const fs = require("fs");
 const { NodeSSH } = require("node-ssh");
-const instanceIp = "144.202.74.207";
-const to4Password = "to4admpasswd";
+
+const to4Password = process.env.TO4_ADMIN_PASSWORD;
+const privateKey = process.env.VULTR_PRIVATE_KEY;
 
 async function updateAptGet(ssh) {
     console.log("Update apt-get");
@@ -74,8 +73,9 @@ async function installTo4(ssh) {
     } else {
         console.log("installing TO4 Server");
         const result = await ssh.execCommand(
-            `wget -q http://to4-dl.united-gameserver.de/packages/alpha/TOServer.sh -O - | bash`, {
-                cwd: `/home/to4adm/TO4Server`
+            `wget -q http://to4-dl.united-gameserver.de/packages/alpha/TOServer.sh -O - | bash`,
+            {
+                cwd: `/home/to4adm/TO4Server`,
             }
         );
         console.log("STDOUT: " + result.stdout);
@@ -83,34 +83,28 @@ async function installTo4(ssh) {
     }
 }
 
-(async () => {
-    try {
-        console.log("Connecting to SSH for root user");
-        const rootSsh = new NodeSSH();
-        await rootSsh.connect({
-            host: instanceIp,
-            username: "root",
-            privateKey: fs.readFileSync(
-                "/Users/kloy2/.ssh/id_rsa.vultr",
-                "utf8"
-            ),
-        });
-        await updateAptGet(rootSsh);
-        await installDependencies(rootSsh);
-        await createTo4User(rootSsh);
-        rootSsh.dispose();
-        console.log("Connecting to SSH for to4 user");
-        const to4Ssh = new NodeSSH();
-        await to4Ssh.connect({
-            host: instanceIp,
-            username: "to4adm",
-            password: to4Password,
-        });
-        await ensureTo4Dir(to4Ssh);
-        await installTo4(to4Ssh);
-        to4Ssh.dispose();
-    } catch (error) {
-        console.log("Exception occurred");
-        console.error(error);
-    }
-})();
+async function main(instanceIp) {
+    console.log("Connecting to SSH for root user");
+    const rootSsh = new NodeSSH();
+    await rootSsh.connect({
+        host: instanceIp,
+        username: "root",
+        privateKey: fs.readFileSync(privateKey, "utf8"),
+    });
+    await updateAptGet(rootSsh);
+    await installDependencies(rootSsh);
+    await createTo4User(rootSsh);
+    rootSsh.dispose();
+    console.log("Connecting to SSH for to4 user");
+    const to4Ssh = new NodeSSH();
+    await to4Ssh.connect({
+        host: instanceIp,
+        username: "to4adm",
+        password: to4Password,
+    });
+    await ensureTo4Dir(to4Ssh);
+    await installTo4(to4Ssh);
+    to4Ssh.dispose();
+}
+
+module.exports = main;
