@@ -1,0 +1,31 @@
+{
+  "name": "vultr-servers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "create-server": "node src/create-server.js",
+    "get-server": "node src/get-server.js",
+    "list-os": "node src/list-os.js",
+    "list-plans": "node src/list-plans.js",
+    "list-regions": "node src/list-regions.js",
+    "list-servers": "node src/list-servers.js",
+    "list-ssh-keys": "node src/list-ssh-keys.js",
+    "format": "prettier --write src/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=14.0.0 <15.0.0"
+  },
+  "dependencies": {
+    "@vultr/vultr-node": "^1.0.3",
+    "execa": "^5.0.0",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "node-ssh": "^11.1.1",
+    "prettier": "2.2.1"
+  }
+}
