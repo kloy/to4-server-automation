@@ -59,6 +59,7 @@ program
     .requiredOption("-p, --password <password>", "TO4 server admin Password")
     .action(({ ip, servername, password }) => {
         console.log("provision command called");
+        console.table({ ip, servername, password });
         commands
             .provisionInstance(ip, servername, password)
             .then(onSuccess)

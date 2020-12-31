@@ -1,5 +1,5 @@
 const api = require('./vultr-api');
-const provision = require('./setup-to4-server.js');
+const provision = require('./provisioners/to4server.js');
 
 async function createInstance({
     osId = 0,
