@@ -7,7 +7,7 @@ async function update(ssh) {
 
 async function install(ssh, packages = []) {
     console.log("Installing dependencies");
-    const result = await ssh.execCommand(`apt-get -y install ${packages.split(' ')}`);
+    const result = await ssh.execCommand(`apt-get -y install ${packages.join(' ')}`);
     console.log("STDOUT: " + result.stdout);
     console.log("STDERR: " + result.stderr);
 }

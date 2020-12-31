@@ -5,7 +5,7 @@ async function mkdirp(ssh, dir) {
     console.log("STDERR: " + result.stderr);    
 }
 
-async function checkIfFileExists(filepath) {
+async function checkIfFileExists(ssh, filepath) {
     console.log(`Checking if filepath exists ${filepath}`);
     const result = await ssh.execCommand(
         `test -f ${filepath} && echo "1" || echo "0"`

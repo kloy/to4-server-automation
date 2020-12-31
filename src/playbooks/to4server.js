@@ -1,5 +1,5 @@
 const path = require("path");
-const fs = require("fs");
+const fs = require("fs-extra");
 const { promisify } = require("util");
 const scpClient = require("scp2");
 const { mkdirp, checkIfFileExists } = require("./ubuntu-fs");
@@ -36,7 +36,7 @@ function buildIni(serverName, adminPassword) {
     return builtFilepath;
 }
 
-async function copyIni(ssh, instanceIp, iniPath) {
+async function copyIni(ssh, instanceIp, iniPath, user, password) {
     console.log("Copying ini");
     const destPath = `${INSTALL_PATH}/TO4cfg.ini`;
     const result = await ssh.execCommand(
@@ -48,7 +48,7 @@ async function copyIni(ssh, instanceIp, iniPath) {
     const scp = promisify(scpClient.scp);
     await scp(
         iniPath,
-        `to4adm:${to4Password}@${instanceIp}:${destPath}`
+        `${user}:${password}@${instanceIp}:${destPath}`
     );
     console.log("Ini copied");
 }
@@ -56,7 +56,7 @@ async function copyIni(ssh, instanceIp, iniPath) {
 const doesTo4Exist = async (ssh) =>
     await checkIfFileExists(ssh, `${INSTALL_PATH}/TOServer.sh`);
 
-async function install(ssh, { instanceIp, serverName, adminPassword }) {
+async function install(ssh, { instanceIp, serverName, adminPassword, user, password }) {
     if (await doesTo4Exist(ssh)) {
         console.log("TO4 server already exists");
     } else {
@@ -64,7 +64,7 @@ async function install(ssh, { instanceIp, serverName, adminPassword }) {
     }
 
     const iniPath = buildIni(serverName, adminPassword);
-    await copyIni(ssh, instanceIp, iniPath);
+    await copyIni(ssh, instanceIp, iniPath, user, password);
 }
 
 module.exports = {

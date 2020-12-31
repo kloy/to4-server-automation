@@ -1,20 +1,22 @@
-const fs = require("fs-extra");
+const fs = require("fs");
 const { NodeSSH } = require("node-ssh");
-const { update, install } = require('../playbooks/apt-get');
-const { createUser } = require('../playbooks/ubuntu-user');
+const { update, install } = require("../playbooks/apt-get");
+const { createUser } = require("../playbooks/ubuntu-user");
 const { install: installTo4 } = require("../playbooks/to4server");
 
-const TO4_USER = 'to4adm';;
+const TO4_USER = "to4adm";
 const TO4_USER_PASSWORD = process.env.TO4_USER_PASSWORD;
 const PRIVATE_KEY = process.env.VULTR_PRIVATE_KEY;
 
 async function connectRootSsh(instanceIp) {
-    console.log(`Connecting with SSH to ${instanceIp} for root user with key ${PRIVATE_KEY}`);
+    console.log(
+        `Connecting with SSH to ${instanceIp} for root user with key ${PRIVATE_KEY}`
+    );
     const rootSsh = new NodeSSH();
     await rootSsh.connect({
         host: instanceIp,
         username: "root",
-        PRIVATE_KEY: fs.readFileSync(PRIVATE_KEY, "utf8"),
+        privateKey: fs.readFileSync(PRIVATE_KEY, "utf8"),
     });
     return rootSsh;
 }
@@ -33,14 +35,18 @@ async function connectTo4admSsh(instanceIp) {
 async function main(instanceIp, serverName, adminPassword) {
     const rootSsh = await connectRootSsh(instanceIp);
     await update(rootSsh);
-    await install(rootSsh, ['p7zip-full, wget']);
+    await install(rootSsh, ["p7zip-full, wget"]);
     // Create a non root user (the server will NOT run as root user)
     await createUser(rootSsh, TO4_USER, TO4_USER_PASSWORD, "TO4Server Admin");
     rootSsh.dispose();
 
     const to4Ssh = await connectTo4admSsh(instanceIp);
     await installTo4(to4Ssh, {
-        instanceIp, serverName, adminPassword,
+        instanceIp,
+        serverName,
+        adminPassword,
+        user: TO4_USER,
+        password: TO4_USER_PASSWORD,
     });
     to4Ssh.dispose();
 
