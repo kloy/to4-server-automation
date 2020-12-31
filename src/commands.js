@@ -39,9 +39,9 @@ async function listInstances() {
     })
 }
 
-async function provisionInstance(instanceIp) {
+async function provisionInstance(instanceIp, serverName, adminPassword) {
     console.log('Provisioning instance');
-    await provision(instanceIp);
+    await provision(instanceIp, serverName, adminPassword);
     console.log('Provisioned instance');
 }
 

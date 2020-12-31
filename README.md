@@ -14,7 +14,7 @@ Following environment variables are required...
 | - | - |
 | VULTR_API_KEY | Required for authenticating with Vultr APIs |
 | VULTR_PRIVATE_KEY | Required for initial SSH login to new instance |
-| TO4_ADMIN_PASSWORD | Required for setting to4adm user password |
+| TO4_USER_PASSWORD | Required for setting to4adm user password |
 
 ## Recommended default values for config
 

@@ -1,7 +1,10 @@
-const fs = require("fs");
+const fs = require("fs-extra");
+const path = require("path");
 const { NodeSSH } = require("node-ssh");
+const scpClient = require("scp2");
+const { promisify } = require("util");
 
-const to4Password = process.env.TO4_ADMIN_PASSWORD;
+const to4Password = process.env.TO4_USER_PASSWORD;
 const privateKey = process.env.VULTR_PRIVATE_KEY;
 
 async function updateAptGet(ssh) {
@@ -22,7 +25,7 @@ async function checkIfUserExists(ssh) {
     const result = await ssh.execCommand("grep -c '^to4adm:' /etc/passwd");
     console.log("STDOUT: " + result.stdout);
     console.log("STDERR: " + result.stderr);
-    return !!Number(result.stdout);
+    return !!Number(result.stdout.trim());
 }
 
 async function createTo4User(ssh) {
@@ -58,11 +61,11 @@ async function ensureTo4Dir(ssh) {
 async function checkIfTo4Exists(ssh) {
     console.log("Checking if TO4 server exists");
     const result = await ssh.execCommand(
-        `test -d ~/TO4Server && echo "1" || echo "0"`
+        `test -f /home/to4adm/TO4Server/TOServer.sh && echo "1" || echo "0"`
     );
     console.log("STDOUT: " + result.stdout);
     console.log("STDERR: " + result.stderr);
-    return !!Number(result);
+    return !!Number(result.stdout.trim());
 }
 
 async function installTo4(ssh) {
@@ -83,7 +86,33 @@ async function installTo4(ssh) {
     }
 }
 
-async function main(instanceIp) {
+async function copyIni(instanceIp, serverName, adminPassword, ssh) {
+    console.log("Copying ini");
+    const result = await ssh.execCommand(
+        `rm /home/to4adm/TO4Server/TO4cfg.ini`
+    );
+    console.log("STDOUT: " + result.stdout);
+    console.log("STDERR: " + result.stderr);
+    const contents = fs.readFileSync(
+        path.resolve(__dirname, "TO4cfg.ini.tpl"),
+        "utf8"
+    );
+    const contentsWithValues = contents
+        .replace("{{to4_server_name}}", serverName)
+        .replace("{{to4_server_admin_password}}", adminPassword);
+    fs.ensureDirSync(path.resolve(__dirname, "../build"));
+    const builtFilepath = path.resolve(__dirname, "../build/TO4cfg.ini");
+    fs.writeFileSync(builtFilepath, contentsWithValues);
+    const configPath = "/home/to4adm/TO4Server/TO4cfg.ini";
+    const scp = promisify(scpClient.scp);
+    await scp(
+        builtFilepath,
+        `to4adm:${to4Password}@${instanceIp}:${configPath}`
+    );
+    console.log("Ini copied");
+}
+
+async function main(instanceIp, serverName, adminPassword) {
     console.log("Connecting to SSH for root user");
     const rootSsh = new NodeSSH();
     await rootSsh.connect({
@@ -104,6 +133,7 @@ async function main(instanceIp) {
     });
     await ensureTo4Dir(to4Ssh);
     await installTo4(to4Ssh);
+    await copyIni(instanceIp, serverName, adminPassword, to4Ssh);
     to4Ssh.dispose();
 }
 

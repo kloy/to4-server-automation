@@ -23,7 +23,9 @@
     "@vultr/vultr-node": "^1.0.3",
     "commander": "^6.2.1",
     "execa": "^5.0.0",
-    "node-fetch": "^2.6.1"
+    "fs-extra": "^9.0.1",
+    "node-fetch": "^2.6.1",
+    "scp2": "^0.5.0"
   },
   "devDependencies": {
     "node-ssh": "^11.1.1",
