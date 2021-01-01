@@ -1,0 +1,14 @@
+[Unit]
+Description=TO4 Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+ExecStart=/bin/bash -c "/home/to4adm/TO4Server/TOServer.sh start"
+ExecStop=/bin/bash -c "/home/to4adm/TO4Server/TOServer.sh stop"
+Restart=no
+User=to4adm
+
+[Install]
+WantedBy=multi-user.target
