@@ -2,7 +2,7 @@ async function mkdirp(ssh, dir) {
     console.log("Create dir with mkdir -p");
     const result = await ssh.execCommand(`mkdir -p ${dir}`);
     console.log("STDOUT: " + result.stdout);
-    console.log("STDERR: " + result.stderr);    
+    console.log("STDERR: " + result.stderr);
 }
 
 async function checkIfFileExists(ssh, filepath) {

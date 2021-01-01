@@ -1,13 +1,13 @@
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
 const apiKey = process.env.VULTR_API_KEY;
-const baseUrl = 'https://api.vultr.com/v2';
+const baseUrl = "https://api.vultr.com/v2";
 
 const getInstances = async () => {
     const response = await fetch(`${baseUrl}/instances`, {
         headers: {
-            Authorization: `Bearer ${apiKey}`
-        }
+            Authorization: `Bearer ${apiKey}`,
+        },
     });
     const data = await response.json();
     return data.instances;
@@ -16,8 +16,8 @@ const getInstances = async () => {
 const getInstance = async (instanceId) => {
     const response = await fetch(`${baseUrl}/instances/${instanceId}`, {
         headers: {
-            Authorization: `Bearer ${apiKey}`
-        }
+            Authorization: `Bearer ${apiKey}`,
+        },
     });
     const data = await response.json();
     return data.instance;
@@ -25,10 +25,10 @@ const getInstance = async (instanceId) => {
 
 const deleteInstance = async (instanceId) => {
     await fetch(`${baseUrl}/instances/${instanceId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-            Authorization: `Bearer ${apiKey}`
-        }
+            Authorization: `Bearer ${apiKey}`,
+        },
     });
 };
 
@@ -39,9 +39,9 @@ const createInstance = async ({
     sshKeyId = "",
 }) => {
     const response = await fetch(`${baseUrl}/instances`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-            Authorization: `Bearer ${apiKey}`
+            Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
             region,
@@ -50,8 +50,8 @@ const createInstance = async ({
             sshkey_id: [sshKeyId],
             activation_email: true,
             label: `[${region}] to4-server ${Date.now()}`,
-            tag: 'to4'
-        })
+            tag: "to4",
+        }),
     });
     const data = await response.json();
     return data;
@@ -60,8 +60,8 @@ const createInstance = async ({
 const getPlans = async () => {
     const response = await fetch(`${baseUrl}/plans`, {
         headers: {
-            Authorization: `Bearer ${apiKey}`
-        }
+            Authorization: `Bearer ${apiKey}`,
+        },
     });
     const data = await response.json();
     return data.plans;
@@ -70,8 +70,8 @@ const getPlans = async () => {
 const getRegions = async () => {
     const response = await fetch(`${baseUrl}/regions`, {
         headers: {
-            Authorization: `Bearer ${apiKey}`
-        }
+            Authorization: `Bearer ${apiKey}`,
+        },
     });
     const data = await response.json();
     return data.regions;
@@ -80,8 +80,8 @@ const getRegions = async () => {
 const getOs = async () => {
     const response = await fetch(`${baseUrl}/os`, {
         headers: {
-            Authorization: `Bearer ${apiKey}`
-        }
+            Authorization: `Bearer ${apiKey}`,
+        },
     });
     const data = await response.json();
     return data.os;
@@ -90,8 +90,8 @@ const getOs = async () => {
 const getSshKeys = async () => {
     const response = await fetch(`${baseUrl}/ssh-keys`, {
         headers: {
-            Authorization: `Bearer ${apiKey}`
-        }
+            Authorization: `Bearer ${apiKey}`,
+        },
     });
     const data = await response.json();
     return data.ssh_keys;
@@ -105,5 +105,5 @@ module.exports = {
     getPlans,
     getRegions,
     getOs,
-    getSshKeys
+    getSshKeys,
 };
