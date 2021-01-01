@@ -16,7 +16,7 @@ async function createUser(ssh, user, password, description = "not root user") {
         );
         console.log("STDOUT: " + result.stdout);
         console.log("STDERR: " + result.stderr);
-        
+
         console.log(`Setting password for user ${description}`);
         // set password for user
         result = await ssh.execCommand(
@@ -29,5 +29,5 @@ async function createUser(ssh, user, password, description = "not root user") {
 
 module.exports = {
     checkIfUserExists,
-    createUser
+    createUser,
 };

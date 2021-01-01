@@ -1,6 +1,5 @@
 const path = require("path");
 const fs = require("fs-extra");
-const { promisify } = require("util");
 const { mkdirp, checkIfFileExists } = require("./ubuntu-fs");
 
 const INSTALL_PATH = "/home/to4adm/TO4Server";
@@ -33,27 +32,43 @@ function buildIni(serverName, adminPassword) {
     const contentsWithValues = contents
         .replace("{{to4_server_name}}", serverName)
         .replace("{{to4_server_admin_password}}", adminPassword);
-    return contentsWithValues;
+    const dest = path.resolve(__dirname, "../../build/TO4cfg.ini");
+    fs.writeFileSync(dest, contentsWithValues, "utf8");
+    return dest;
 }
 
-async function sendIni(scpClient, content) {
+async function sendIni(ssh, iniPath) {
     console.log("Sending ini");
     const destination = `${INSTALL_PATH}/TO4cfg.ini`;
-
-    const scp = promisify(scpClient.write.bind(scpClient));
-    await scp({
-        destination,
-        content: Buffer.from(content, 'utf8'),
-    });
+    await ssh.putFile(iniPath, destination);
     console.log("Ini copied");
 }
 
 const doesTo4Exist = async (ssh) =>
     await checkIfFileExists(ssh, `${INSTALL_PATH}/TOServer.sh`);
 
+async function setupSystemdService(ssh) {
+    const destination = "/etc/systemd/system/to4.service";
+    const exists = await checkIfFileExists(ssh, destination);
+    if (exists) {
+        console.log("Service already exists");
+        return;
+    }
+
+    console.log("Installing To4 service");
+    const servicePath = path.resolve(__dirname, "../templates/to4.service");
+    await ssh.putFile(servicePath, destination);
+    let result = await ssh.execCommand(`systemctl enable to4.service`);
+    console.log("STDOUT: " + result.stdout);
+    console.log("STDERR: " + result.stderr);
+    result = await ssh.execCommand(`systemctl start to4.service`);
+    console.log("STDOUT: " + result.stdout);
+    console.log("STDERR: " + result.stderr);
+    console.log("Installed To4 service");
+}
+
 async function install({
     ssh,
-    scpClient,
     serverName = "TO4 Server",
     adminPassword = "to4admin",
 }) {
@@ -61,11 +76,12 @@ async function install({
         console.log("TO4 server already exists");
     } else {
         await installTo4(ssh);
-        const iniContent = buildIni(serverName, adminPassword);
-        await sendIni(scpClient, iniContent);
+        const iniPath = buildIni(serverName, adminPassword);
+        await sendIni(ssh, iniPath);
     }
 }
 
 module.exports = {
     install,
+    setupSystemdService,
 };

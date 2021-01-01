@@ -4,13 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "create-server": "node src/create-server.js",
-    "get-server": "node src/get-server.js",
-    "list-os": "node src/list-os.js",
-    "list-plans": "node src/list-plans.js",
-    "list-regions": "node src/list-regions.js",
-    "list-servers": "node src/list-servers.js",
-    "list-ssh-keys": "node src/list-ssh-keys.js",
     "format": "prettier --write src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,15 +13,13 @@
     "node": ">=14.0.0 <15.0.0"
   },
   "dependencies": {
-    "@vultr/vultr-node": "^1.0.3",
     "commander": "^6.2.1",
     "execa": "^5.0.0",
     "fs-extra": "^9.0.1",
     "node-fetch": "^2.6.1",
-    "scp2": "^0.5.0"
+    "node-ssh": "^11.1.1"
   },
   "devDependencies": {
-    "node-ssh": "^11.1.1",
     "prettier": "2.2.1"
   }
 }
