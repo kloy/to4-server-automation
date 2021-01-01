@@ -58,7 +58,10 @@ async function setupSystemdService(ssh) {
     console.log("Installing To4 service");
     const servicePath = path.resolve(__dirname, "../templates/to4.service");
     await ssh.putFile(servicePath, destination);
-    const result = await ssh.execCommand(`systemctl enable to4.service`);
+    let result = await ssh.execCommand(`systemctl enable to4.service`);
+    console.log("STDOUT: " + result.stdout);
+    console.log("STDERR: " + result.stderr);
+    result = await ssh.execCommand(`systemctl start to4.service`);
     console.log("STDOUT: " + result.stdout);
     console.log("STDERR: " + result.stderr);
     console.log("Installed To4 service");
