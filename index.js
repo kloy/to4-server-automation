@@ -29,7 +29,7 @@ program
                 osId: config.osId,
                 plan: config.plan,
                 region: config.region,
-                sshKeyId: config.sshKeyId,
+                sshKeyId: process.env.VULTR_SSH_KEY_ID,
             })
             .then(onSuccess)
             .catch(onFail);

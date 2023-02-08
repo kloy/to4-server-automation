@@ -1,6 +1,6 @@
 {
-    "description": "Dallas, US",
+    "description": "London, GB",
     "osId": 270,
     "plan": "vhp-1c-1gb-intel",
-    "region": "dfw"
+    "region": "lhr"
 }

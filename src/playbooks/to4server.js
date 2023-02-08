@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs-extra");
 const { mkdirp, checkIfFileExists } = require("./ubuntu-fs");
+const { mkdirp: localMkdirp } = require('mkdirp');
 
 const INSTALL_PATH = "/home/to4adm/TO4Server";
 
@@ -33,6 +34,7 @@ function buildIni(serverName, adminPassword) {
         .replace("{{to4_server_name}}", serverName)
         .replace("{{to4_server_admin_password}}", adminPassword);
     const dest = path.resolve(__dirname, "../../build/TO4cfg.ini");
+    localMkdirp.sync(path.dirname(dest));
     fs.writeFileSync(dest, contentsWithValues, "utf8");
     return dest;
 }
