@@ -1,6 +1,7 @@
 const fs = require("fs");
 const { NodeSSH } = require("node-ssh");
 const { update, install } = require("../playbooks/apt-get");
+const { ufw } = require("../playbooks/ufw");
 const { createUser } = require("../playbooks/ubuntu-user");
 const {
     install: installTo4,
@@ -38,6 +39,7 @@ async function connectTo4admSsh(instanceIp) {
 async function main(instanceIp, serverName, adminPassword) {
     const rootSsh = await connectRootSsh(instanceIp);
     await update(rootSsh);
+    await ufw(rootSsh);
     await install(rootSsh, ["p7zip-full", "wget"]);
     // Create a non root user (the server will NOT run as root user)
     await createUser(rootSsh, TO4_USER, TO4_USER_PASSWORD, "TO4Server Admin");
