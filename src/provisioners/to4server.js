@@ -7,6 +7,10 @@ const {
     install: installTo4,
     setupSystemdService,
 } = require("../playbooks/to4server");
+const {
+    install: installTo4reporter,
+    setupSystemdService: setupSystemdServiceTo4reporter,
+} = require("../playbooks/to4reporter");
 
 const TO4_USER = "to4adm";
 const TO4_USER_PASSWORD = process.env.TO4_USER_PASSWORD;
@@ -50,6 +54,13 @@ async function main(instanceIp, serverName, adminPassword) {
         adminPassword,
     });
     await setupSystemdService(rootSsh);
+
+    await installTo4reporter({
+        ssh: to4Ssh,
+        serverName,
+        adminPassword,
+    });
+    await setupSystemdServiceTo4reporter(rootSsh);
 
     rootSsh.dispose();
     to4Ssh.dispose();

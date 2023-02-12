@@ -1,0 +1,11 @@
+[Unit]
+Description=TO4Reporter
+
+[Service]
+ExecStart=/bin/bash -c "/home/to4adm/to4reporter -i /home/to4adm/TO4Server/TO4cfg.ini -l /home/to4adm/TO4Server/TO/Saved/Logs/TO.log"
+Restart=no
+User=to4adm
+KillSignal=SIGQUIT
+
+[Install]
+WantedBy=multi-user.target
